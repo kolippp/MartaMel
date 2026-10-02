@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Сторінка контактів і бронювання для портфоліо професійного фотографа преміум-класу.">
+  <title>Контакти | Marta Melnarovych Photography</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #fbfaf7;
+      --white: #ffffff;
+      --cream: #f2eee6;
+      --stone: #d8d0c3;
+      --warm-gray: #857d73;
+      --charcoal: #191817;
+      --ink: #302d29;
+      --border: 1px solid rgba(25, 24, 23, 0.12);
+      --shadow: 0 18px 50px rgba(25, 24, 23, 0.07);
+      --serif: "Cormorant Garamond", Georgia, serif;
+      --sans: "Inter", Arial, sans-serif;
+      --header: 76px;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--charcoal);
+      font-family: var(--sans);
+      line-height: 1.75;
+    }
+    body.menu-open, body.chat-open { overflow: hidden; }
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .site-header {
+      position: fixed;
+      z-index: 50;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(20px, 5vw, 64px);
+      background: rgba(251, 250, 247, 0.88);
+      border-bottom: var(--border);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 2px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .brand strong {
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+    .brand span {
+      color: var(--warm-gray);
+      font-size: 0.57rem;
+      font-weight: 700;
+    }
+
+    .menu-toggle {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      background: transparent;
+      padding: 0;
+    }
+    .menu-toggle span {
+      display: block;
+      width: 28px;
+      height: 1px;
+      margin: 4px 0;
+      background: var(--charcoal);
+    }
+
+    .menu-overlay {
+      position: fixed;
+      z-index: 100;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 33.333vw; /* 1/3 of the screen */
+      min-width: min(320px, 100vw); /* keeps the menu usable on small screens */
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: 22px clamp(24px, 3vw, 48px) 36px;
+      background: var(--white);
+      box-shadow: -24px 0 60px rgba(25, 24, 23, 0.12);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(100%);
+      transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
+    }
+
+    /* Dimmed area over the remaining 2/3 of the page; clicking it closes the menu */
+    .menu-overlay::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 100%;
+      width: 100vw;
+      background: rgba(25, 24, 23, 0.38);
+    }
+    .menu-overlay.is-open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+    .menu-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .menu-close {
+      width: 48px;
+      height: 48px;
+      position: relative;
+      border: 0;
+      background: transparent;
+    }
+    .menu-close::before,
+    .menu-close::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 11px;
+      width: 26px;
+      height: 1px;
+      background: var(--charcoal);
+    }
+    .menu-close::before { transform: rotate(45deg); }
+    .menu-close::after { transform: rotate(-45deg); }
+    .menu-nav {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      gap: clamp(18px, 2.4vw, 32px);
+      min-height: 0;
+    }
+    .menu-nav a {
+      position: relative;
+      color: inherit;
+      font-family: var(--serif);
+      font-size: clamp(1.9rem, 3vw, 3rem);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .menu-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      color: var(--warm-gray);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    main { padding-top: var(--header); }
+    .section { padding: clamp(72px, 10vw, 128px) clamp(20px, 5vw, 64px); }
+    .section-cream { background: var(--cream); }
+    .container { width: min(1180px, 100%); margin: 0 auto; }
+    .page-hero { padding-top: clamp(84px, 12vw, 150px); padding-bottom: clamp(54px, 9vw, 96px); }
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.72fr);
+      gap: clamp(30px, 6vw, 84px);
+      align-items: start;
+    }
+    .eyebrow {
+      margin: 0 0 18px;
+      color: var(--warm-gray);
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3 {
+      margin: 0;
+      color: var(--charcoal);
+      font-family: var(--serif);
+      font-weight: 400;
+      letter-spacing: 0;
+      line-height: 0.96;
+    }
+    h1 { max-width: 900px; font-size: clamp(3.8rem, 11vw, 9rem); }
+    h2 { max-width: 760px; font-size: clamp(3rem, 7vw, 6rem); }
+    h3 { font-size: clamp(1.8rem, 4vw, 2.7rem); }
+    .lead {
+      max-width: 650px;
+      margin: 24px 0 0;
+      color: var(--ink);
+      font-size: clamp(1rem, 2vw, 1.16rem);
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.68);
+      border: var(--border);
+      box-shadow: var(--shadow);
+      padding: clamp(24px, 4vw, 36px);
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .field { display: grid; gap: 8px; }
+    .field-full { grid-column: 1 / -1; }
+    label {
+      color: var(--warm-gray);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    input, textarea, select {
+      width: 100%;
+      border: var(--border);
+      border-radius: 0;
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--charcoal);
+      padding: 15px 16px;
+      outline: 0;
+    }
+    textarea { min-height: 150px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { border-color: rgba(25, 24, 23, 0.48); background: var(--white); }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 28px; }
+    .btn {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 22px;
+      border: var(--border);
+      background: var(--charcoal);
+      color: var(--white);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      transition: transform 0.3s var(--ease), background 0.3s var(--ease), color 0.3s var(--ease);
+    }
+    .btn:hover { transform: translateY(-2px); background: transparent; color: var(--charcoal); }
+    .btn-light { background: transparent; color: var(--charcoal); }
+    .btn-light:hover { background: var(--charcoal); color: var(--white); }
+    .form-note { min-height: 26px; margin: 12px 0 0; color: var(--warm-gray); }
+
+    .contact-list { list-style: none; padding: 0; margin: 26px 0 0; }
+    .contact-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 15px 0;
+      border-top: var(--border);
+    }
+    .contact-list span {
+      color: var(--warm-gray);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .faq-list { border-top: var(--border); }
+    .faq-item { border-bottom: var(--border); }
+    .faq-question {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 22px 0;
+      border: 0;
+      background: transparent;
+      color: var(--charcoal);
+      font-family: var(--serif);
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      text-align: left;
+    }
+    .faq-icon {
+      width: 22px;
+      height: 22px;
+      position: relative;
+      flex: 0 0 auto;
+    }
+    .faq-icon::before, .faq-icon::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: var(--charcoal);
+    }
+    .faq-icon::after { transform: rotate(90deg); transition: transform 0.25s var(--ease); }
+    .faq-item.is-open .faq-icon::after { transform: rotate(0deg); }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.32s var(--ease);
+    }
+    .faq-answer p {
+      max-width: 760px;
+      margin: 0 0 24px;
+      color: var(--warm-gray);
+    }
+
+    .map-placeholder {
+      min-height: 330px;
+      display: grid;
+      place-items: center;
+      border: var(--border);
+      background:
+        linear-gradient(rgba(251, 250, 247, 0.72), rgba(251, 250, 247, 0.72)),
+        repeating-linear-gradient(90deg, transparent 0 42px, rgba(25, 24, 23, 0.06) 42px 43px),
+        repeating-linear-gradient(0deg, transparent 0 42px, rgba(25, 24, 23, 0.06) 42px 43px);
+      color: var(--warm-gray);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .chatbot { position: fixed; z-index: 80; right: 18px; bottom: 18px; }
+    .chatbot-toggle {
+      width: 58px;
+      height: 58px;
+      border: var(--border);
+      border-radius: 50%;
+      background: var(--charcoal);
+      color: var(--white);
+      box-shadow: var(--shadow);
+      font-family: var(--serif);
+      font-size: 1.45rem;
+    }
+    .chat-window {
+      position: absolute;
+      right: 0;
+      bottom: 76px;
+      width: min(360px, calc(100vw - 36px));
+      background: var(--white);
+      border: var(--border);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(14px);
+      transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+    }
+    .chatbot.is-open .chat-window { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .chat-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 18px;
+      border-bottom: var(--border);
+    }
+    .chat-head strong { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; }
+    .chat-close { border: 0; background: transparent; color: var(--warm-gray); font-size: 1.4rem; }
+    .chat-messages { max-height: 280px; overflow-y: auto; padding: 18px; }
+    .message {
+      width: fit-content;
+      max-width: 88%;
+      margin-bottom: 10px;
+      padding: 10px 12px;
+      background: var(--cream);
+      color: var(--ink);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+    .message-user { margin-left: auto; background: var(--charcoal); color: var(--white); }
+    .chat-prompts { display: grid; gap: 8px; padding: 0 18px 18px; }
+    .chat-prompt {
+      padding: 11px 12px;
+      border: var(--border);
+      background: transparent;
+      color: var(--charcoal);
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+
+    .footer {
+      padding: 44px clamp(20px, 5vw, 64px);
+      border-top: var(--border);
+      color: var(--warm-gray);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .footer-inner {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 780px) {
+      :root { --header: 68px; }
+      .brand strong { font-size: 1.05rem; }
+      .brand span { display: none; }
+      .split, .form-grid { grid-template-columns: 1fr; }
+      .field-full { grid-column: auto; }
+      .menu-meta { flex-direction: column; }
+      .contact-list li { flex-direction: column; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Marta Melnarovych Photography — на головну">
+      <strong>Marta Melnarovych</strong>
+      <span>Фотографія</span>
+    </a>
+    <button class="menu-toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" data-menu-open>
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <div class="menu-overlay" aria-hidden="true" data-menu-overlay>
+    <div class="menu-top">
+      <a class="brand" href="index.html">
+        <strong>Marta Melnarovych</strong>
+        <span>Фотографія</span>
+      </a>
+      <button class="menu-close" type="button" aria-label="Закрити меню" data-menu-close>
+        <span class="sr-only">Закрити меню</span>
+      </button>
+    </div>
+    <nav class="menu-nav" aria-label="Головна навігація">
+      <a href="index.html" data-menu-close>Головна</a>
+      <a href="gallery.html" data-menu-close>Галерея</a>
+      <a href="services.html" data-menu-close>Послуги</a>
+      <a href="reviews.html" data-menu-close>Відгуки</a>
+      <a href="contact.html" data-menu-close>Контакти</a>
+    </nav>
+    <div class="menu-meta">
+      <span>Запити на бронювання</span>
+      <span>Нью-Йорк / По всьому світу</span>
+    </div>
+  </div>
+
+  <main>
+    <section class="section page-hero">
+      <div class="container split">
+        <div>
+          <p class="eyebrow">Бронювання</p>
+          <h1>Розкажіть, що ви хочете пам'ятати.</h1>
+        </div>
+        <p class="lead">Надішліть кілька деталей — і я відповім із вільними датами, порадами та персональним наступним кроком для вашої портретної, весільної, лайфстайл- або брендингової сесії.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container split">
+        <form class="card" data-booking-form>
+          <div class="form-grid">
+            <div class="field">
+              <label for="name">Ім'я</label>
+              <input id="name" name="name" type="text" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="email">Електронна пошта</label>
+              <input id="email" name="email" type="email" autocomplete="email" required>
+            </div>
+            <div class="field">
+              <label for="phone">Телефон</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel">
+            </div>
+            <div class="field">
+              <label for="session">Тип сесії</label>
+              <select id="session" name="session" required>
+                <option value="">Оберіть варіант</option>
+                <option>Портретна фотографія</option>
+                <option>Пари / Весілля</option>
+                <option>Лайфстайл / Брендинг</option>
+                <option>Інше</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="date">Бажана дата</label>
+              <input id="date" name="date" type="date">
+            </div>
+            <div class="field">
+              <label for="location">Локація</label>
+              <input id="location" name="location" type="text" placeholder="Місто, заклад або студія">
+            </div>
+            <div class="field field-full">
+              <label for="message">Повідомлення</label>
+              <textarea id="message" name="message" placeholder="Поділіться своїм задумом, термінами та важливими деталями."></textarea>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn" type="submit">Надіслати запит</button>
+          </div>
+          <p class="form-note" data-form-note></p>
+        </form>
+
+        <aside>
+          <p class="eyebrow">Контакти</p>
+          <h2>Дані студії.</h2>
+          <ul class="contact-list">
+            <li><span>Електронна пошта</span><a href="mailto:hello@maisonelara.com">hello@maisonelara.com</a></li>
+            <li><span>Телефон</span><a href="tel:+12125550184">+1 212 555 0184</a></li>
+            <li><span>Instagram</span><a href="https://instagram.com/" target="_blank" rel="noreferrer">@maisonelara</a></li>
+            <li><span>Facebook</span><a href="https://facebook.com/" target="_blank" rel="noreferrer">Marta Melnarovych</a></li>
+            <li><span>TikTok</span><a href="https://tiktok.com/" target="_blank" rel="noreferrer">@maisonelara</a></li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section section-cream">
+      <div class="container">
+        <p class="eyebrow">Часті запитання</p>
+        <h2>Перш ніж зв'язатися.</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">Як забронювати сесію?<span class="faq-icon"></span></button>
+            <div class="faq-answer"><p>Надішліть запит на бронювання з бажаною датою, локацією та типом сесії. Я відповім із вільними датами, порадами щодо пакета та наступними кроками.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">Скільки часу займає отримання фото?<span class="faq-icon"></span></button>
+            <div class="faq-answer"><p>Більшість портретних і брендингових галерей надаються протягом 10–14 днів. Терміни для весіль і кампаній можна уточнити в деталях пакета.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">Скільки фото я отримаю?<span class="faq-icon"></span></button>
+            <div class="faq-answer"><p>Кількість фінальних зображень залежить від колекції. Орієнтовні пакети містять від 30+ до 250+ оброблених зображень.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">Ви допомагаєте з позуванням?<span class="faq-icon"></span></button>
+            <div class="faq-answer"><p>Так. Сесії включають спокійну, вишукану режисуру, щоб ви знали, де стати, як рухатися і коли просто розслабитися в моменті.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">Чи можу я обрати локацію?<span class="faq-icon"></span></button>
+            <div class="faq-answer"><p>Так. Ви можете запропонувати власну ідею локації, або я порекомендую місця з огляду на світло, приватність, настрій і історію, яку мають розповісти зображення.</p></div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" type="button" aria-expanded="false">Чи потрібна передоплата?<span class="faq-icon"></span></button>
+            <div class="faq-answer"><p>Використайте цю відповідь для реальної політики щодо передоплати. Багато бронювань закріплюють дату після підписання договору та внесення передоплати.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container split">
+        <div>
+          <p class="eyebrow">Мапа</p>
+          <h2>Студія та зона роботи.</h2>
+          <p class="lead">Замініть цей блок на вбудовану Google-мапу, адресу студії або мапу зони обслуговування.</p>
+        </div>
+        <div class="map-placeholder">Місце для Google-мапи</div>
+      </div>
+    </section>
+  </main>
+
+  <div class="chatbot" data-chatbot>
+    <button class="chatbot-toggle" type="button" aria-label="Відкрити чат бронювання" aria-expanded="false" data-chatbot-toggle>?</button>
+    <div class="chat-window" role="dialog" aria-label="Чат-бот бронювання">
+      <div class="chat-head">
+        <strong>Чат бронювання</strong>
+        <button class="chat-close" type="button" aria-label="Закрити чат бронювання" data-chat-close>×</button>
+      </div>
+      <div class="chat-messages" data-chat-messages>
+        <div class="message">Вітаю! Оберіть запитання нижче, і я надам коротку орієнтовну відповідь.</div>
+      </div>
+      <div class="chat-prompts">
+        <button class="chat-prompt" type="button" data-chat-prompt="booking">Як забронювати?</button>
+        <button class="chat-prompt" type="button" data-chat-prompt="delivery">Коли надаються фото?</button>
+        <button class="chat-prompt" type="button" data-chat-prompt="deposit">Чи потрібна передоплата?</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>Marta Melnarovych Photography</span>
+      <span>© 2026 Усі права захищено</span>
+    </div>
+  </footer>
+
+  <script>
+    const body = document.body;
+    const menuOverlay = document.querySelector("[data-menu-overlay]");
+    const menuOpen = document.querySelector("[data-menu-open]");
+    const menuCloseButtons = document.querySelectorAll("[data-menu-close]");
+
+    function openMenu() {
+      menuOverlay.classList.add("is-open");
+      menuOverlay.setAttribute("aria-hidden", "false");
+      body.classList.add("menu-open");
+      menuOpen.setAttribute("aria-expanded", "true");
+    }
+
+    function closeMenu() {
+      menuOverlay.classList.remove("is-open");
+      menuOverlay.setAttribute("aria-hidden", "true");
+      body.classList.remove("menu-open");
+      menuOpen.setAttribute("aria-expanded", "false");
+    }
+
+    menuOpen.addEventListener("click", openMenu);
+    // Clicking the dimmed area to the left of the 1/3 menu panel closes it
+    menuOverlay.addEventListener("click", (event) => {
+      if (event.clientX < menuOverlay.getBoundingClientRect().left) closeMenu();
+    });
+    menuCloseButtons.forEach((button) => button.addEventListener("click", closeMenu));
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeMenu();
+    });
+
+    document.querySelectorAll(".faq-item").forEach((item) => {
+      const question = item.querySelector(".faq-question");
+      const answer = item.querySelector(".faq-answer");
+      question.addEventListener("click", () => {
+        const isOpen = item.classList.contains("is-open");
+        document.querySelectorAll(".faq-item").forEach((faq) => {
+          faq.classList.remove("is-open");
+          faq.querySelector(".faq-answer").style.maxHeight = null;
+          faq.querySelector(".faq-question").setAttribute("aria-expanded", "false");
+        });
+        if (!isOpen) {
+          item.classList.add("is-open");
+          answer.style.maxHeight = answer.scrollHeight + "px";
+          question.setAttribute("aria-expanded", "true");
+        }
+      });
+    });
+
+    const bookingForm = document.querySelector("[data-booking-form]");
+    const formNote = document.querySelector("[data-form-note]");
+    bookingForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      formNote.textContent = "Дякую! Ваш запит готовий до підключення до реальної системи бронювання.";
+      bookingForm.reset();
+    });
+
+    const chatbot = document.querySelector("[data-chatbot]");
+    const chatToggle = document.querySelector("[data-chatbot-toggle]");
+    const chatClose = document.querySelector("[data-chat-close]");
+    const chatMessages = document.querySelector("[data-chat-messages]");
+    const answers = {
+      booking: "Сесію можна замовити через контактну форму. Я підтверджу доступність, локацію та деталі стилізації електронною поштою.",
+      delivery: "Портретні та брендингові галереї зазвичай надаються протягом 10–14 днів. Весілля та більші історії можуть тривати 4–6 тижнів.",
+      deposit: "Тут можна додати умови щодо передоплати. Багато фотографів закріплюють дату після підписання договору та внесення передоплати."
+    };
+
+    function addMessage(text, user = false) {
+      const message = document.createElement("div");
+      message.className = user ? "message message-user" : "message";
+      message.textContent = text;
+      chatMessages.appendChild(message);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function closeChat() {
+      chatbot.classList.remove("is-open");
+      body.classList.remove("chat-open");
+      chatToggle.setAttribute("aria-expanded", "false");
+    }
+
+    chatToggle.addEventListener("click", () => {
+      const open = chatbot.classList.toggle("is-open");
+      body.classList.toggle("chat-open", open);
+      chatToggle.setAttribute("aria-expanded", String(open));
+    });
+    chatClose.addEventListener("click", closeChat);
+    document.querySelectorAll("[data-chat-prompt]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const key = button.dataset.chatPrompt;
+        addMessage(button.textContent.trim(), true);
+        window.setTimeout(() => addMessage(answers[key]), 300);
+      });
+    });
+  </script>
+</body>
+</html>
